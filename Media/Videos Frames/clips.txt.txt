@@ -1,0 +1,4 @@
+file 'videos/v01-rose-awakens.mp4'
+file 'videos/v02-rose-bloom.mp4'
+file 'videos/v03-petals-scatter.mp4'
+file 'videos/v04-ambient-stage.mp4'

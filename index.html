@@ -1,0 +1,2166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>BLOOM — A Rose For Vidisha</title>
+  
+  <!-- Google Fonts: Fraunces & Inter & Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,200..900;1,9..144,200..900&family=Inter:wght@200;300;400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+  <!-- Core CDNs: GSAP, ScrollTrigger, Lenis, Canvas-Confetti -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.18/dist/lenis.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+
+  <style>
+    /* -------------------------------------------------------------
+       DESIGN SYSTEM & PALETTE
+       Background: #060204 (near-black velvet burgundy), #140509 radial
+       Text: #f5ece6 (warm ivory), rgba(245, 236, 230, 0.45) muted
+       Accents: #c9a675 (rose gold), #7a1128 (deep crimson lacquer)
+       ------------------------------------------------------------- */
+    :root {
+      --bg-deep: #060204;
+      --bg-warm: #140509;
+      --text-ivory: #f5ece6;
+      --text-muted: rgba(245, 236, 230, 0.45);
+      --text-faint: rgba(245, 236, 230, 0.25);
+      --rose-gold: #c9a675;
+      --rose-gold-glow: rgba(201, 166, 117, 0.35);
+      --crimson-lacquer: #7a1128;
+      --crimson-glow: rgba(122, 17, 40, 0.45);
+      --border-gold: rgba(201, 166, 117, 0.25);
+      --ease-cinematic: cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* Technical Rule: overflow-x: clip on html and body */
+    html, body {
+      overflow-x: clip;
+      background-color: var(--bg-deep);
+      color: var(--text-ivory);
+      font-family: 'Inter', 'Plus Jakarta Sans', sans-serif;
+      font-weight: 300;
+      line-height: 1.5;
+      cursor: default;
+    }
+
+    ::selection {
+      background: var(--crimson-lacquer);
+      color: var(--text-ivory);
+    }
+
+    /* Ambient Haute-Couture Film Grain */
+    .film-grain {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 9999;
+      opacity: 0.034;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+    }
+
+    /* Subtle Radial Warmth Glows */
+    .ambient-glow {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 0;
+      background:
+        radial-gradient(ellipse 75% 55% at 50% 12%, rgba(122, 17, 40, 0.22) 0%, rgba(20, 5, 9, 0.5) 45%, transparent 75%),
+        radial-gradient(circle 50vw at 85% 75%, rgba(201, 166, 117, 0.05) 0%, transparent 60%),
+        radial-gradient(circle 45vw at 15% 85%, rgba(122, 17, 40, 0.16) 0%, transparent 65%);
+    }
+
+    /* Bespoke Active Theory Custom Cursor */
+    .cursor-dot {
+      width: 5px;
+      height: 5px;
+      background: var(--rose-gold);
+      border-radius: 50%;
+      position: fixed;
+      top: 0;
+      left: 0;
+      pointer-events: none;
+      z-index: 10000;
+      transform: translate(-50%, -50%);
+      transition: width 0.2s, height 0.2s, background-color 0.2s;
+    }
+
+    .cursor-ring {
+      width: 34px;
+      height: 34px;
+      border: 1px solid rgba(201, 166, 117, 0.35);
+      border-radius: 50%;
+      position: fixed;
+      top: 0;
+      left: 0;
+      pointer-events: none;
+      z-index: 9999;
+      transform: translate(-50%, -50%);
+      transition: width 0.3s var(--ease-cinematic),
+                  height 0.3s var(--ease-cinematic),
+                  border-color 0.3s ease;
+    }
+
+    /* -------------------------------------------------------------
+       1. FIXED MINIMAL NAV & PROGRESS
+       ------------------------------------------------------------- */
+    .nav-fixed {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 76px;
+      padding: 0 44px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 1000;
+      pointer-events: none;
+    }
+
+    .nav-brand {
+      pointer-events: auto;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 6px;
+      color: var(--rose-gold);
+      text-transform: uppercase;
+      text-decoration: none;
+      transition: opacity 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .nav-brand:hover {
+      opacity: 0.8;
+    }
+
+    .nav-brand::before {
+      content: '';
+      display: inline-block;
+      width: 5px;
+      height: 5px;
+      background: var(--crimson-lacquer);
+      border-radius: 50%;
+      box-shadow: 0 0 10px var(--crimson-lacquer);
+    }
+
+    .nav-center {
+      pointer-events: auto;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .sound-toggle-btn {
+      background: rgba(20, 5, 9, 0.55);
+      border: 1px solid rgba(201, 166, 117, 0.3);
+      border-radius: 999px;
+      padding: 8px 18px;
+      color: var(--text-ivory);
+      font-size: 10px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      transition: all 0.3s ease;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.4);
+    }
+
+    .sound-toggle-btn:hover {
+      border-color: var(--rose-gold);
+      color: var(--text-ivory);
+      background: rgba(122, 17, 40, 0.35);
+      box-shadow: 0 0 20px rgba(201, 166, 117, 0.25);
+    }
+
+    .audio-waves {
+      display: flex;
+      align-items: center;
+      gap: 2.5px;
+      height: 10px;
+    }
+
+    .audio-wave-bar {
+      width: 2px;
+      height: 3px;
+      background: var(--rose-gold);
+      border-radius: 1px;
+      transition: height 0.2s ease;
+    }
+
+    .sound-toggle-btn.is-playing .audio-wave-bar:nth-child(1) {
+      animation: wave 1.2s infinite ease-in-out;
+    }
+    .sound-toggle-btn.is-playing .audio-wave-bar:nth-child(2) {
+      animation: wave 0.9s infinite 0.2s ease-in-out;
+    }
+    .sound-toggle-btn.is-playing .audio-wave-bar:nth-child(3) {
+      animation: wave 1.4s infinite 0.4s ease-in-out;
+    }
+
+    @keyframes wave {
+      0%, 100% { height: 3px; }
+      50% { height: 11px; }
+    }
+
+    .nav-dedication {
+      pointer-events: auto;
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 4px;
+      color: var(--text-ivory);
+      text-transform: uppercase;
+      opacity: 0.9;
+    }
+
+    /* Pinned 2px rose-gold scroll progress bar along right edge of viewport */
+    .scroll-progress-container {
+      position: fixed;
+      right: 0;
+      top: 0;
+      width: 2px;
+      height: 100vh;
+      z-index: 1001;
+      background: rgba(255, 255, 255, 0.04);
+      pointer-events: none;
+    }
+
+    .scroll-progress-bar {
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(to bottom, var(--rose-gold), var(--crimson-lacquer));
+      transform-origin: top;
+      transform: scaleY(0);
+      will-change: transform;
+      box-shadow: 0 0 10px var(--rose-gold-glow);
+    }
+
+    /* -------------------------------------------------------------
+       INITIAL LUXURY PRELOADER (Preloads first 30 frames)
+       ------------------------------------------------------------- */
+    .initial-loader {
+      position: fixed;
+      inset: 0;
+      background: var(--bg-deep);
+      z-index: 10000;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.8s var(--ease-cinematic),
+                  visibility 0.8s var(--ease-cinematic);
+    }
+
+    .initial-loader.loaded {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .loader-title {
+      font-family: 'Fraunces', serif;
+      font-style: italic;
+      font-size: 44px;
+      font-weight: 300;
+      letter-spacing: 4px;
+      color: var(--text-ivory);
+      margin-bottom: 12px;
+      text-shadow: 0 0 35px rgba(122, 17, 40, 0.4);
+    }
+
+    .loader-kicker {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 6px;
+      color: var(--rose-gold);
+      text-transform: uppercase;
+      margin-bottom: 28px;
+    }
+
+    .loader-track {
+      width: 220px;
+      height: 1px;
+      background: rgba(255, 255, 255, 0.1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .loader-fill {
+      position: absolute;
+      left: 0;
+      top: 0;
+      height: 100%;
+      width: 0%;
+      background: var(--rose-gold);
+      box-shadow: 0 0 12px var(--rose-gold);
+      transition: width 0.12s ease-out;
+    }
+
+    .loader-percent {
+      margin-top: 14px;
+      font-size: 10px;
+      letter-spacing: 3px;
+      color: var(--text-muted);
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* -------------------------------------------------------------
+       2. HERO SECTION — THE SCROLL-SCRUBBED ROSE REVEAL
+       ------------------------------------------------------------- */
+    .hero-section {
+      position: relative;
+      width: 100vw;
+      height: 450vh;
+      background: var(--bg-deep);
+      z-index: 1;
+    }
+
+    .hero-sticky-stage {
+      position: sticky;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #hero-canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: block;
+      z-index: 2;
+    }
+
+    /* Fallback Hero Video */
+    #hero-fallback-video {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: none;
+      z-index: 1;
+      opacity: 0.7;
+    }
+
+    /* Dark Vignette Overlay */
+    .hero-canvas-vignette {
+      position: absolute;
+      inset: 0;
+      z-index: 3;
+      pointer-events: none;
+      background: radial-gradient(circle at 50% 50%, rgba(6, 2, 4, 0.1) 20%, rgba(6, 2, 4, 0.55) 75%, var(--bg-deep) 100%);
+    }
+
+    /* Synchronized Hero Text Overlays */
+    .hero-text-container {
+      position: absolute;
+      inset: 0;
+      z-index: 4;
+      pointer-events: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 0 24px;
+    }
+
+    .hero-text-item {
+      position: absolute;
+      opacity: 0;
+      transform: translateY(30px);
+      will-change: transform, opacity;
+      width: 100%;
+      max-width: 960px;
+      margin: 0 auto;
+      pointer-events: none;
+    }
+
+    /* 0.05-0.15: "BLOOM" — 110px Fraunces italic #f5ece6 centered */
+    .hero-title-bloom {
+      font-family: 'Fraunces', serif;
+      font-style: italic;
+      font-weight: 300;
+      font-size: clamp(64px, 9vw, 110px);
+      letter-spacing: 0.02em;
+      color: var(--text-ivory);
+      line-height: 1.05;
+      text-shadow: 0 10px 40px rgba(0, 0, 0, 0.95), 0 0 60px rgba(122, 17, 40, 0.4);
+    }
+
+    /* 0.20-0.30: "A rose, reimagined." — 26px Inter light italic #f5ece6 centered */
+    .hero-sub-reimagined {
+      font-family: 'Inter', sans-serif;
+      font-style: italic;
+      font-weight: 300;
+      font-size: clamp(20px, 2.5vw, 26px);
+      letter-spacing: 0.06em;
+      color: var(--text-ivory);
+      text-shadow: 0 4px 20px rgba(0, 0, 0, 0.85);
+    }
+
+    /* 0.45-0.55: "Petals scatter, moments remain." — 60px Fraunces #f5ece6 centered */
+    .hero-line-petals {
+      font-family: 'Fraunces', serif;
+      font-weight: 300;
+      font-size: clamp(32px, 5vw, 60px);
+      line-height: 1.2;
+      color: var(--text-ivory);
+      text-shadow: 0 8px 30px rgba(0, 0, 0, 0.9);
+    }
+
+    /* 0.65-0.78: "Every detail, unforgettable." — 60px Fraunces #f5ece6 centered */
+    .hero-line-detail {
+      font-family: 'Fraunces', serif;
+      font-weight: 300;
+      font-size: clamp(32px, 5vw, 60px);
+      line-height: 1.2;
+      color: var(--text-ivory);
+      text-shadow: 0 8px 30px rgba(0, 0, 0, 0.9);
+    }
+
+    /* 0.85-0.95: "SCROLL TO ENTER HER WORLD" — 11px Inter uppercase letter-spacing 6px #c9a675 centered */
+    .hero-cue-enter {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+      font-family: 'Inter', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 6px;
+      text-transform: uppercase;
+      color: var(--rose-gold);
+      text-shadow: 0 0 15px var(--rose-gold-glow);
+    }
+
+    .scroll-arrow-down {
+      width: 16px;
+      height: 26px;
+      border: 1px solid rgba(201, 166, 117, 0.4);
+      border-radius: 999px;
+      position: relative;
+    }
+
+    .scroll-arrow-down::after {
+      content: '';
+      position: absolute;
+      top: 5px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 2px;
+      height: 6px;
+      background: var(--rose-gold);
+      border-radius: 2px;
+      animation: wheelBounce 1.8s infinite;
+    }
+
+    @keyframes wheelBounce {
+      0% { top: 5px; opacity: 1; }
+      80% { top: 14px; opacity: 0; }
+      100% { top: 5px; opacity: 0; }
+    }
+
+    /* -------------------------------------------------------------
+       3. THE ACTIVE THEORY-STYLE 3D CYLINDRICAL CAROUSEL (HER GALLERY)
+       ------------------------------------------------------------- */
+    .gallery-section {
+      position: relative;
+      width: 100vw;
+      height: 420vh;
+      background: var(--bg-deep);
+      z-index: 2;
+    }
+
+    .gallery-sticky-stage {
+      position: sticky;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      perspective: 1200px;
+      perspective-origin: 50% 50%;
+    }
+
+    .gallery-bg-glow {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      background: radial-gradient(circle at 50% 50%, rgba(122, 17, 40, 0.24) 0%, rgba(20, 5, 9, 0.55) 50%, var(--bg-deep) 85%);
+    }
+
+    .gallery-header {
+      position: absolute;
+      top: 88px;
+      left: 0;
+      width: 100%;
+      text-align: center;
+      z-index: 10;
+      pointer-events: none;
+    }
+
+    .gallery-kicker {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 6px;
+      text-transform: uppercase;
+      color: var(--rose-gold);
+      margin-bottom: 8px;
+      display: inline-block;
+    }
+
+    .gallery-title {
+      font-family: 'Fraunces', serif;
+      font-style: italic;
+      font-size: clamp(24px, 4vw, 36px);
+      font-weight: 300;
+      color: var(--text-ivory);
+      letter-spacing: 1px;
+    }
+
+    /* Drag Helper Pill */
+    .gallery-interaction-pill {
+      position: absolute;
+      bottom: 40px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 10;
+      pointer-events: none;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: rgba(20, 5, 9, 0.5);
+      border: 1px solid rgba(201, 166, 117, 0.2);
+      border-radius: 999px;
+      padding: 9px 22px;
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      font-size: 10px;
+      letter-spacing: 3px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+
+    .interaction-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--rose-gold);
+      animation: pulseGlow 2s infinite ease-in-out;
+    }
+
+    @keyframes pulseGlow {
+      0%, 100% { opacity: 0.3; transform: scale(0.9); }
+      50% { opacity: 1; transform: scale(1.25); }
+    }
+
+    /* 3D Cylindrical Ring Container */
+    .carousel-stage-container {
+      position: relative;
+      width: 300px;
+      height: 440px;
+      transform-style: preserve-3d;
+      will-change: transform;
+      cursor: grab;
+      user-select: none;
+      touch-action: pan-y;
+      z-index: 5;
+    }
+
+    .carousel-stage-container:active {
+      cursor: grabbing;
+    }
+
+    /* Memory Card on the 3D Cylinder: 300px x 440px, 1px gold border, blur 16px, rounded-2xl, reflection */
+    .carousel-card {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 300px;
+      height: 440px;
+      border-radius: 20px;
+      border: 1px solid var(--border-gold);
+      background: linear-gradient(155deg, rgba(255, 255, 255, 0.08) 0%, rgba(122, 17, 40, 0.18) 45%, rgba(6, 2, 4, 0.94) 100%);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      overflow: hidden;
+      transform-style: preserve-3d;
+      will-change: transform, opacity, filter;
+      transition: border-color 0.4s ease, box-shadow 0.4s ease;
+      cursor: pointer;
+      -webkit-box-reflect: below 14px linear-gradient(to bottom, transparent 72%, rgba(0, 0, 0, 0.35) 100%);
+    }
+
+    .carousel-card:hover {
+      border-color: rgba(201, 166, 117, 0.7);
+      box-shadow: 0 0 35px rgba(201, 166, 117, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    }
+
+    .carousel-card.is-front {
+      border-color: rgba(201, 166, 117, 0.55);
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.7), 0 0 35px rgba(122, 17, 40, 0.4);
+    }
+
+    .card-image-wrap {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      z-index: 1;
+    }
+
+    .card-photo {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+      transition: transform 0.8s var(--ease-cinematic);
+    }
+
+    .carousel-card:hover .card-photo {
+      transform: scale(1.06);
+    }
+
+    .card-gradient-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to bottom,
+        rgba(6, 2, 4, 0.25) 0%,
+        rgba(6, 2, 4, 0.05) 25%,
+        rgba(6, 2, 4, 0.75) 60%,
+        rgba(6, 2, 4, 0.98) 100%
+      );
+      z-index: 2;
+    }
+
+    .card-content {
+      position: absolute;
+      inset: 0;
+      padding: 22px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      z-index: 3;
+      pointer-events: none;
+    }
+
+    .card-top-pill {
+      align-self: flex-start;
+      background: rgba(6, 2, 4, 0.75);
+      border: 1px solid rgba(201, 166, 117, 0.3);
+      border-radius: 999px;
+      padding: 5px 12px;
+      font-size: 9px;
+      font-weight: 600;
+      letter-spacing: 2.5px;
+      color: var(--rose-gold);
+      text-transform: uppercase;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
+
+    .card-bottom-info {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    /* Card Paragraph Display */
+    .card-paragraph-preview {
+      font-family: 'Inter', sans-serif;
+      font-size: 11.5px;
+      line-height: 1.55;
+      color: rgba(245, 236, 230, 0.9);
+      font-weight: 300;
+      display: -webkit-box;
+      -webkit-line-clamp: 4;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.9);
+      background: rgba(6, 2, 4, 0.35);
+      padding: 8px 10px;
+      border-radius: 8px;
+      border-left: 2px solid var(--rose-gold);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+    }
+
+    .card-caption-kicker {
+      font-size: 9.5px;
+      letter-spacing: 2px;
+      color: var(--rose-gold);
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: 600;
+      margin-top: 2px;
+    }
+
+    .card-caption-kicker span:last-child {
+      font-size: 13px;
+      transition: transform 0.3s;
+    }
+
+    .carousel-card:hover .card-caption-kicker span:last-child {
+      transform: translateX(4px);
+    }
+
+    /* -------------------------------------------------------------
+       STORY REVEAL MODAL (HER NARRATIVE)
+       ------------------------------------------------------------- */
+    .story-modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(6, 2, 4, 0.9);
+      backdrop-filter: blur(28px);
+      -webkit-backdrop-filter: blur(28px);
+      z-index: 2000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.4s var(--ease-cinematic), visibility 0.4s var(--ease-cinematic);
+    }
+
+    .story-modal-backdrop.is-open {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .story-modal-dialog {
+      position: relative;
+      width: 100%;
+      max-width: 940px;
+      max-height: 90vh;
+      background: linear-gradient(145deg, rgba(20, 5, 9, 0.96) 0%, rgba(6, 2, 4, 0.98) 100%);
+      border: 1px solid rgba(201, 166, 117, 0.35);
+      border-radius: 24px;
+      overflow: hidden;
+      box-shadow: 0 25px 80px rgba(0, 0, 0, 0.95), 0 0 50px rgba(122, 17, 40, 0.35);
+      display: grid;
+      grid-template-columns: 1fr 1.2fr;
+      transform: scale(0.92) translateY(20px);
+      transition: transform 0.5s var(--ease-cinematic);
+    }
+
+    .story-modal-backdrop.is-open .story-modal-dialog {
+      transform: scale(1) translateY(0);
+    }
+
+    .modal-close-btn {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      width: 40px;
+      height: 40px;
+      background: rgba(20, 5, 9, 0.65);
+      border: 1px solid rgba(201, 166, 117, 0.3);
+      border-radius: 50%;
+      color: var(--text-ivory);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      z-index: 10;
+      transition: all 0.25s ease;
+      font-size: 15px;
+    }
+
+    .modal-close-btn:hover {
+      background: var(--crimson-lacquer);
+      border-color: var(--rose-gold);
+      transform: rotate(90deg);
+    }
+
+    .modal-photo-pane {
+      position: relative;
+      min-height: 440px;
+      background: #000;
+      overflow: hidden;
+    }
+
+    .modal-photo {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+    }
+
+    .modal-text-pane {
+      padding: 52px 42px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      overflow-y: auto;
+      max-height: 85vh;
+    }
+
+    .modal-chapter-tag {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 5px;
+      text-transform: uppercase;
+      color: var(--rose-gold);
+      margin-bottom: 14px;
+    }
+
+    .modal-story-title {
+      font-family: 'Fraunces', serif;
+      font-style: italic;
+      font-size: clamp(26px, 3.5vw, 34px);
+      font-weight: 300;
+      color: var(--text-ivory);
+      line-height: 1.15;
+      margin-bottom: 20px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid rgba(201, 166, 117, 0.2);
+    }
+
+    .modal-story-body {
+      font-size: 14.5px;
+      line-height: 1.85;
+      color: rgba(245, 236, 230, 0.9);
+      font-weight: 300;
+      white-space: pre-line;
+      margin-bottom: 28px;
+      outline: none;
+      transition: background 0.3s ease;
+      border-radius: 8px;
+    }
+
+    .modal-story-body[contenteditable="true"] {
+      padding: 12px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px dashed rgba(201, 166, 117, 0.4);
+    }
+
+    .modal-actions {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-top: auto;
+    }
+
+    .edit-note-btn {
+      background: transparent;
+      border: 1px solid rgba(201, 166, 117, 0.3);
+      color: var(--rose-gold);
+      padding: 9px 20px;
+      border-radius: 999px;
+      font-size: 10px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .edit-note-btn:hover {
+      background: rgba(201, 166, 117, 0.12);
+      border-color: var(--rose-gold);
+    }
+
+    /* -------------------------------------------------------------
+       4. THE CLIMAX — THE PROPOSAL STAGE
+       ------------------------------------------------------------- */
+    .proposal-section {
+      position: relative;
+      width: 100vw;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg-deep);
+      padding: 120px 24px 80px;
+      z-index: 3;
+      overflow: hidden;
+    }
+
+    /* Background Video Clip: Media/Videos Frames/v04-ambient-stage.mp4 */
+    .proposal-bg-video {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0.28;
+      pointer-events: none;
+      z-index: 0;
+      filter: saturate(1.2) contrast(1.1);
+    }
+
+    .proposal-vignette {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 50% 50%, rgba(6, 2, 4, 0.35) 0%, rgba(6, 2, 4, 0.88) 75%, var(--bg-deep) 100%);
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* Center Stage Couture Glassmorphic Spotlight Card */
+    .proposal-card {
+      position: relative;
+      width: 100%;
+      max-width: 640px;
+      padding: 60px 40px;
+      background: radial-gradient(circle at 50% 0%, rgba(122, 17, 40, 0.38) 0%, rgba(20, 5, 9, 0.78) 60%, rgba(6, 2, 4, 0.95) 100%);
+      border: 1px solid rgba(201, 166, 117, 0.3);
+      border-radius: 28px;
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      box-shadow:
+        0 25px 80px rgba(0, 0, 0, 0.9),
+        0 0 100px rgba(122, 17, 40, 0.3),
+        inset 0 1px 0 rgba(201, 166, 117, 0.4);
+      text-align: center;
+      z-index: 2;
+      overflow: hidden;
+      transition: transform 0.6s var(--ease-cinematic), box-shadow 0.6s ease;
+    }
+
+    .proposal-kicker {
+      font-size: 11px;
+      font-family: 'Inter', sans-serif;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 6px;
+      color: var(--rose-gold);
+      margin-bottom: 24px;
+      display: inline-block;
+      text-shadow: 0 0 12px var(--rose-gold-glow);
+    }
+
+    .proposal-heading {
+      font-family: 'Fraunces', serif;
+      font-style: italic;
+      font-weight: 300;
+      font-size: clamp(34px, 5.2vw, 56px);
+      line-height: 1.25;
+      color: var(--text-ivory);
+      margin-bottom: 22px;
+      text-shadow: 0 10px 30px rgba(0, 0, 0, 0.85);
+    }
+
+    .proposal-subtext {
+      font-size: 15px;
+      font-family: 'Inter', sans-serif;
+      font-weight: 300;
+      line-height: 1.7;
+      color: rgba(245, 236, 230, 0.75);
+      max-width: 480px;
+      margin: 0 auto 40px;
+    }
+
+    /* Interactive Button Pair Container */
+    .proposal-button-stage {
+      position: relative;
+      min-height: 90px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 24px;
+      flex-wrap: wrap;
+    }
+
+    /* Button "YES": Haute-couture deep velvet crimson-to-rose-gold gradient,
+       1px solid #c9a675, color #f5ece6, font Inter 12px uppercase letter-spacing 4px,
+       padding 18px 46px, border-radius: 999px */
+    .btn-proposal-yes {
+      position: relative;
+      background: linear-gradient(135deg, var(--crimson-lacquer) 0%, #a82442 45%, var(--rose-gold) 100%);
+      border: 1px solid var(--rose-gold);
+      color: var(--text-ivory);
+      font-family: 'Inter', sans-serif;
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 4px;
+      padding: 18px 46px;
+      border-radius: 999px;
+      cursor: pointer;
+      box-shadow: 0 0 35px rgba(201, 166, 117, 0.4), 0 8px 24px rgba(122, 17, 40, 0.6);
+      transition: all 0.35s var(--ease-cinematic);
+      overflow: hidden;
+      z-index: 5;
+    }
+
+    .btn-proposal-yes::after {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -60%;
+      width: 40%;
+      height: 200%;
+      background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.3), transparent);
+      transform: rotate(30deg);
+      transition: left 0.7s ease;
+    }
+
+    .btn-proposal-yes:hover::after {
+      left: 140%;
+    }
+
+    .btn-proposal-yes:hover {
+      transform: translateY(-3px) scale(1.04);
+      box-shadow: 0 0 55px rgba(201, 166, 117, 0.6), 0 12px 32px rgba(122, 17, 40, 0.8);
+    }
+
+    /* Button "NO": Minimal outline, transparent background, 1px solid rgba(245, 236, 230, 0.2),
+       color rgba(245, 236, 230, 0.6), font Inter 12px uppercase letter-spacing 4px,
+       padding 18px 46px, border-radius: 999px */
+    .btn-proposal-no {
+      position: relative;
+      background: transparent;
+      border: 1px solid rgba(245, 236, 230, 0.2);
+      color: rgba(245, 236, 230, 0.6);
+      font-family: 'Inter', sans-serif;
+      font-size: 12px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 4px;
+      padding: 18px 46px;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: transform 0.28s cubic-bezier(0.2, 0.8, 0.2, 1),
+                  opacity 0.4s ease,
+                  border-color 0.3s ease;
+      will-change: transform;
+      user-select: none;
+      z-index: 4;
+    }
+
+    .btn-proposal-no:hover {
+      border-color: rgba(245, 236, 230, 0.5);
+      color: rgba(245, 236, 230, 0.9);
+    }
+
+    /* Accepted Celebration State */
+    .proposal-accepted-state {
+      display: none;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: all 0.8s var(--ease-cinematic);
+    }
+
+    .proposal-accepted-state.show {
+      display: block;
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .accepted-emblem {
+      font-size: 48px;
+      color: var(--rose-gold);
+      margin-bottom: 20px;
+      animation: heartbeat 2s infinite ease-in-out;
+      text-shadow: 0 0 35px var(--crimson-glow);
+    }
+
+    @keyframes heartbeat {
+      0%, 100% { transform: scale(1); }
+      14% { transform: scale(1.18); }
+      28% { transform: scale(1); }
+      42% { transform: scale(1.12); }
+      70% { transform: scale(1); }
+    }
+
+    .accepted-heading {
+      font-family: 'Fraunces', serif;
+      font-style: italic;
+      font-size: clamp(32px, 5vw, 50px);
+      font-weight: 300;
+      color: var(--text-ivory);
+      line-height: 1.25;
+      margin-bottom: 18px;
+      text-shadow: 0 0 40px rgba(201, 166, 117, 0.4);
+    }
+
+    .accepted-message {
+      font-size: 15px;
+      font-family: 'Inter', sans-serif;
+      font-weight: 300;
+      color: rgba(245, 236, 230, 0.85);
+      max-width: 480px;
+      margin: 0 auto;
+      line-height: 1.7;
+    }
+
+    /* -------------------------------------------------------------
+       5. FOOTER: "BLOOM — FOR VIDISHA. CRAFTED WITH ALL MY HEART."
+       ------------------------------------------------------------- */
+    .site-footer {
+      position: relative;
+      width: 100vw;
+      padding: 44px 24px;
+      background: var(--bg-deep);
+      border-top: 1px solid rgba(201, 166, 117, 0.12);
+      text-align: center;
+      z-index: 5;
+    }
+
+    .footer-text {
+      font-size: 10px;
+      letter-spacing: 5px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      font-weight: 500;
+    }
+
+    /* Responsive Adjustments */
+    @media (max-width: 768px) {
+      .nav-fixed {
+        padding: 0 20px;
+        height: 64px;
+      }
+      .nav-brand {
+        letter-spacing: 4px;
+        font-size: 10px;
+      }
+      .nav-dedication {
+        letter-spacing: 3px;
+        font-size: 10px;
+      }
+      .gallery-sticky-stage {
+        perspective: 900px;
+      }
+      .carousel-stage-container {
+        width: 250px;
+        height: 370px;
+      }
+      .carousel-card {
+        width: 250px;
+        height: 370px;
+      }
+      .story-modal-dialog {
+        grid-template-columns: 1fr;
+        max-height: 85vh;
+      }
+      .modal-photo-pane {
+        min-height: 250px;
+      }
+      .modal-text-pane {
+        padding: 32px 24px;
+      }
+      .proposal-card {
+        padding: 44px 24px;
+        border-radius: 22px;
+      }
+      .btn-proposal-yes, .btn-proposal-no {
+        padding: 16px 36px;
+        font-size: 11px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Background Music Audio Element -->
+  <audio id="bg-music" src="Music/Legendary-Pakistani-Singer-SnapYT.App.mp3" loop preload="auto"></audio>
+
+  <!-- Film Grain & Ambient Velvet Glow -->
+  <div class="film-grain"></div>
+  <div class="ambient-glow"></div>
+
+  <!-- Custom Cursor Elements -->
+  <div class="cursor-dot" id="cursor-dot"></div>
+  <div class="cursor-ring" id="cursor-ring"></div>
+
+  <!-- 1. FIXED MINIMAL NAV & PROGRESS -->
+  <header class="nav-fixed">
+    <a href="#" class="nav-brand">BLOOM</a>
+    <div class="nav-center">
+      <button class="sound-toggle-btn" id="sound-btn" aria-label="Toggle Soundtrack">
+        <div class="audio-waves">
+          <div class="audio-wave-bar"></div>
+          <div class="audio-wave-bar"></div>
+          <div class="audio-wave-bar"></div>
+        </div>
+        <span id="sound-btn-text">SOUND [OFF]</span>
+      </button>
+    </div>
+    <div class="nav-dedication">FOR VIDI</div>
+  </header>
+
+  <!-- Pinned 2px rose-gold scroll progress bar along right edge -->
+  <div class="scroll-progress-container">
+    <div class="scroll-progress-bar" id="scroll-progress-bar"></div>
+  </div>
+
+  <!-- Initial Bespoke Luxury Loader (Preloading first 30 frames) -->
+  <div class="initial-loader" id="initial-loader">
+    <div class="loader-title">Bloom</div>
+    <div class="loader-kicker">Curating Her World</div>
+    <div class="loader-track">
+      <div class="loader-fill" id="loader-fill"></div>
+    </div>
+    <div class="loader-percent" id="loader-percent">0%</div>
+  </div>
+
+  <!-- -------------------------------------------------------------
+       2. HERO SECTION — THE SCROLL-SCRUBBED ROSE REVEAL
+       ------------------------------------------------------------- -->
+  <section class="hero-section" id="hero">
+    <div class="hero-sticky-stage" id="hero-sticky">
+      <!-- HTML5 Canvas for scrubbing 628 frames -->
+      <canvas id="hero-canvas"></canvas>
+
+      <!-- Fallback Hero Video -->
+      <video id="hero-fallback-video" src="Media/Videos Frames/rose-story.mp4" muted loop playsinline></video>
+
+      <!-- Vignette layer for cinematics -->
+      <div class="hero-canvas-vignette"></div>
+
+      <!-- Synchronized Text Overlays -->
+      <div class="hero-text-container">
+        <!-- 0.05-0.15: "BLOOM" — 110px Fraunces italic #f5ece6 centered -->
+        <div class="hero-text-item" id="hero-text-1">
+          <h1 class="hero-title-bloom">BLOOM</h1>
+        </div>
+
+        <!-- 0.20-0.30: "A rose, reimagined." — 26px Inter light italic #f5ece6 centered -->
+        <div class="hero-text-item" id="hero-text-2">
+          <p class="hero-sub-reimagined">A rose, reimagined.</p>
+        </div>
+
+        <!-- 0.45-0.55: "Petals scatter, moments remain." — 60px Fraunces #f5ece6 centered -->
+        <div class="hero-text-item" id="hero-text-3">
+          <h2 class="hero-line-petals">Petals scatter, moments remain.</h2>
+        </div>
+
+        <!-- 0.65-0.78: "Every detail, unforgettable." — 60px Fraunces #f5ece6 centered -->
+        <div class="hero-text-item" id="hero-text-4">
+          <h2 class="hero-line-detail">Every detail, unforgettable.</h2>
+        </div>
+
+        <!-- 0.85-0.95: "SCROLL TO ENTER HER WORLD" — 11px Inter uppercase letter-spacing 6px #c9a675 centered -->
+        <div class="hero-text-item" id="hero-text-5">
+          <div class="hero-cue-enter">
+            <span>Scroll to enter her world</span>
+            <div class="scroll-arrow-down"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- -------------------------------------------------------------
+       3. ACTIVE THEORY-STYLE 3D CYLINDRICAL CAROUSEL (HER GALLERY)
+       ------------------------------------------------------------- -->
+  <section class="gallery-section" id="gallery">
+    <div class="gallery-sticky-stage" id="gallery-sticky">
+      <div class="gallery-bg-glow"></div>
+
+      <!-- Gallery Header -->
+      <div class="gallery-header">
+        <span class="gallery-kicker">Her Unforgettable Chapters</span>
+        <h2 class="gallery-title">A Symphony of Memories</h2>
+      </div>
+
+      <!-- 3D Cylindrical Ring Stage -->
+      <div class="carousel-stage-container" id="carousel-ring">
+        <!-- Populated dynamically with 8 memory cards -->
+      </div>
+
+      <!-- Drag & Interaction Prompt -->
+      <div class="gallery-interaction-pill">
+        <div class="interaction-dot"></div>
+        <span>Drag to rotate • Click card to reveal full memory</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- STORY REVEAL MODAL -->
+  <div class="story-modal-backdrop" id="story-modal">
+    <div class="story-modal-dialog">
+      <button class="modal-close-btn" id="modal-close" aria-label="Close story">✕</button>
+      <div class="modal-photo-pane">
+        <img src="" alt="Vidisha Memory" class="modal-photo" id="modal-img">
+      </div>
+      <div class="modal-text-pane">
+        <div class="modal-chapter-tag" id="modal-chapter">CHAPTER 01</div>
+        <h3 class="modal-story-title" id="modal-title">Memory 01</h3>
+        <div class="modal-story-body" id="modal-body" contenteditable="false"></div>
+        <div class="modal-actions">
+          <button class="edit-note-btn" id="edit-note-btn">
+            <span>✎</span> <span id="edit-btn-text">Personalize Note</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- -------------------------------------------------------------
+       4. THE CLIMAX — THE PROPOSAL STAGE
+       ------------------------------------------------------------- -->
+  <section class="proposal-section" id="proposal">
+    <!-- Ambient Background Stage Video -->
+    <video class="proposal-bg-video" src="Media/Videos Frames/v04-ambient-stage.mp4" autoplay loop muted playsinline></video>
+    <div class="proposal-vignette"></div>
+
+    <!-- Center Stage Couture Glassmorphic Spotlight Card -->
+    <div class="proposal-card" id="proposal-card">
+      <div id="proposal-active-content">
+        <span class="proposal-kicker">VIDISHA, I WANT THIS TO BE OUR ENDGAME</span>
+        <h2 class="proposal-heading">Will you allow me to be your partner?</h2>
+        <p class="proposal-subtext">I love you. Every chapter with you is my favorite.</p>
+        
+        <!-- Interactive Button Pair -->
+        <div class="proposal-button-stage" id="proposal-button-stage">
+          <button class="btn-proposal-yes" id="btn-yes">YES</button>
+          <button class="btn-proposal-no" id="btn-no">NO</button>
+        </div>
+      </div>
+
+      <!-- Accepted Celebration View -->
+      <div class="proposal-accepted-state" id="proposal-accepted">
+        <div class="accepted-emblem">🌹</div>
+        <h2 class="accepted-heading">Forever begins now. Check your phone ❤️</h2>
+        <p class="accepted-message">Every second, every quiet glance, and every heartbeat is yours. I can't wait to spend forever by your side.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- -------------------------------------------------------------
+       5. FOOTER
+       ------------------------------------------------------------- -->
+  <footer class="site-footer">
+    <div class="footer-text">BLOOM — FOR VIDISHA. CRAFTED WITH ALL MY HEART.</div>
+  </footer>
+
+  <!-- -------------------------------------------------------------
+       JAVASCRIPT: ENGINE & ORCHESTRATION
+       ------------------------------------------------------------- -->
+  <script>
+    /* =============================================================
+       GLOBAL CONSTANTS & MEMORIES
+       ============================================================= */
+    const TOTAL_FRAMES = 628;
+    const DISCORD_WEBHOOK = "https://discord.com/api/webhooks/1570102655731114075/DHgMaQn09OmI3_HSHssFZYYpgp9n7vgIgSpSwdyZfpNXTXPh52joaclTDnvjFJ5kqtyW";
+
+    // 8 Memory chapters with user's exact paragraphs and her photos from Vidi/ folder
+    const MEMORIES = [
+      {
+        id: 1,
+        photo: 'Vidi/photo01.jpeg',
+        photoAlt: 'Vidi/photo01.jpg',
+        chapter: 'CHAPTER 01',
+        title: 'Where It All Began',
+        story: `the day our paths crossed last year something completely unexplainable happened to me like i didnt even know u deeply yet nor did i have any right over u but that warmth radiating from u was so real we were just normal friends back then walking our own lines bcuz life was moving fast but your presence left such an impression on my chest that time simply refused to erase i acted totally nonchalant pretending u were just another person in this crowded world but deep down i already knew u were going to mean everything to me`
+      },
+      {
+        id: 2,
+        photo: 'Vidi/photo02.jpeg',
+        photoAlt: 'Vidi/photo02.jpg',
+        chapter: 'CHAPTER 02',
+        title: 'An Unbreakable Vow',
+        story: `when u contacted me again in 2026 my heart genuinely exhaled bcuz i got my old friend back but then as u opened up about your family your house the unbearable grief of your fathers demise and how your people were forcing an eighteen year old girl to marry some rich stranger just to settle down something inside me snapped with pure rage how could anyone look at a girl so brilliant and kind and try to steal her freedom that night i made an unbreakable vow to myself that no matter what happens in this life ill make u completely independent ill teach u every single skill and hand u every tool i possess so u stand so tall that no one in this world can ever force u into anything ever again`
+      },
+      {
+        id: 3,
+        photo: 'Vidi/photo03.jpeg',
+        photoAlt: 'Vidi/photo03.jpg',
+        chapter: 'CHAPTER 03',
+        title: 'Golden Moments',
+        story: `i swear i fell in love with u the exact moment our paths rejoined yet i was too terrified to admit it even to my own reflection i kept making up lame excuses telling myself it was just care just loyalty just good friendship but who was i lying to all those late night chats the experiences u shared the way we spoke for hours became the absolute golden moments of my entire existence i caught myself smiling like a complete fool replaying your words in my head constantly trying to disguise my devotion as companionship bcuz the sheer depth of what i felt for u scared me`
+      },
+      {
+        id: 4,
+        photo: 'Vidi/photo04.jpeg',
+        photoAlt: 'Vidi/photo04.jpg',
+        chapter: 'CHAPTER 04',
+        title: 'Building Our Kingdom',
+        story: `approaching u regarding arael was never just business to me it was an excuse to build a whole kingdom with the only girl whose mind actually fascinates mine those nights we spent discussing the brand aesthetics the ethos the designs were so special to me and ill never forget them especially when i sent over the company paperwork and u replied with voice notes explaining the changes your voice had so much warmth so much comfort that it grounded my chaotic mind in seconds i still have every single one of those audio notes saved on my phone and whenever the world gets too loud i just listen to them to remember what pure peace sounds like`
+      },
+      {
+        id: 5,
+        photo: 'Vidi/photo05.jpeg',
+        photoAlt: 'Vidi/photo05.jpg',
+        chapter: 'CHAPTER 05',
+        title: 'Protecting Your Light',
+        story: `ill never forget that night when u were crying and completely devastated talking about zeeshan hearing how that ungrateful son of a bitch took u for granted used u and damaged your gentle soul just for his cheap entertainment made my blood boil no girl with a heart as pure as yours deserved to be treated like an option by someone so worthless tearing down his facade and exposing all his dirty tricks with u was the easiest thing ive ever done and im just so endlessly glad that i could pull u out of that dark trap and bring light back into your life`
+      },
+      {
+        id: 6,
+        photo: 'Vidi/photo06.jpeg',
+        photoAlt: 'Vidi/photo06.jpg',
+        chapter: 'CHAPTER 06',
+        title: 'Carved Into My Soul',
+        story: `after that night everything fundamentally shifted inside me your happiness literally became my happiness your frustration gave me genuine anxiety and your sadness completely shattered my composure whatever was hurting u became my problem to solve i took all of you into myself and carved your soul right into my heart i finally stopped denying it stopped running behind`
+      },
+      {
+        id: 7,
+        photo: 'Vidi/photo07.jpeg',
+        photoAlt: 'Vidi/photo07.jpg',
+        chapter: 'CHAPTER 07',
+        title: 'My Only Prayer',
+        story: `once i accepted this love i poured my entire soul into u not even a single second has crossed where u werent on my mind u lived in my dreams every single night painting entire futures where we are happily married traveling across the snowy roads of switzerland exploring every corner of this earth buying supercars and living a life of pure freedom i even wrote an entire novel dedicated to your name just to capture your essence i saved endless reels thinking of u and every single day when i told u i was going to the temple it was never for myself i visited shiv jis temple ganpati bappas temple and krishna jis temple constantly asking the universe for only one blessing and that prayer was always just u`
+      },
+      {
+        id: 8,
+        photo: 'Vidi/photo08.jpeg',
+        photoAlt: 'Vidi/photo08.jpg',
+        chapter: 'CHAPTER 08',
+        title: 'Forever & Always',
+        story: `they say first love is often just a painful lesson but second love is the one that cleanses and heals your soul my absolute biggest fear in this world is hurting u so whatever made u uncomfortable i buried it instantly the boy who never gave a single damn about himself who treated his own life with numbness and drove overspeeding into the dark hoping his time comes soon changed the second u told me to stop u told me to take care and suddenly i found a reason to breathe again your smile brought me back from the edge and i truly believe the wrong ones only throw u into the right arms and zeeshan unwittingly threw u straight into mine where you belong
+
+i know your trauma is still raw and the scars havent healed completely and who am i to rush a heart that was treated so carelessly if u feel this is too fast or if u need time ill wait months years an entire lifetime without a single complaint people babble about a two year age gap but tell me does a tiny number really matter when souls are meant for eternity
+
+so please vidi ji let me be your endgame and your final destination let me stand by u protect your independence and cherish u till my last breath please vidisha ji accept me as your husband`
+      }
+    ];
+
+    /* =============================================================
+       BACKGROUND MUSIC CONTROLLER (Legendary-Pakistani-Singer-SnapYT.App.mp3)
+       ============================================================= */
+    const bgMusic = document.getElementById('bg-music');
+    const soundBtn = document.getElementById('sound-btn');
+    const soundBtnText = document.getElementById('sound-btn-text');
+    let isMusicPlaying = false;
+    let hasAttemptedAutoStart = false;
+
+    bgMusic.volume = 0.75;
+
+    function playAudioTrack() {
+      bgMusic.play().then(() => {
+        isMusicPlaying = true;
+        soundBtn.classList.add('is-playing');
+        soundBtnText.textContent = 'SOUND [ON]';
+      }).catch(err => {
+        console.log('Audio autoplay awaiting interaction:', err);
+      });
+    }
+
+    function pauseAudioTrack() {
+      bgMusic.pause();
+      isMusicPlaying = false;
+      soundBtn.classList.remove('is-playing');
+      soundBtnText.textContent = 'SOUND [OFF]';
+    }
+
+    soundBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (bgMusic.paused) {
+        playAudioTrack();
+      } else {
+        pauseAudioTrack();
+      }
+    });
+
+    // Auto-trigger on first user interaction anywhere on page
+    const startAudioOnFirstTouch = () => {
+      if (!hasAttemptedAutoStart && bgMusic.paused) {
+        hasAttemptedAutoStart = true;
+        playAudioTrack();
+      }
+      window.removeEventListener('click', startAudioOnFirstTouch);
+      window.removeEventListener('touchstart', startAudioOnFirstTouch);
+    };
+    window.addEventListener('click', startAudioOnFirstTouch);
+    window.addEventListener('touchstart', startAudioOnFirstTouch);
+
+    /* =============================================================
+       TECHNICAL RULE: SYNC LENIS WITH GSAP
+       ============================================================= */
+    gsap.registerPlugin(ScrollTrigger);
+
+    let lenis = null;
+    try {
+      lenis = new Lenis({
+        duration: 1.2,
+        easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+        orientation: 'vertical',
+        smoothWheel: true,
+        wheelMultiplier: 0.9,
+      });
+
+      lenis.on('scroll', ScrollTrigger.update);
+      gsap.ticker.add((time) => {
+        lenis.raf(time * 1000);
+      });
+      gsap.ticker.lagSmoothing(0);
+    } catch (e) {
+      console.warn("Lenis initialization info:", e);
+    }
+
+    // Scroll Progress Bar Update
+    window.addEventListener('scroll', () => {
+      const totalScroll = document.documentElement.scrollHeight - window.innerHeight;
+      const progress = totalScroll > 0 ? window.scrollY / totalScroll : 0;
+      const bar = document.getElementById('scroll-progress-bar');
+      if (bar) {
+        bar.style.transform = `scaleY(${Math.min(1, Math.max(0, progress))})`;
+      }
+    });
+
+    /* =============================================================
+       BESPOKE ACTIVE THEORY LUXURY CURSOR
+       ============================================================= */
+    const cursorDot = document.getElementById('cursor-dot');
+    const cursorRing = document.getElementById('cursor-ring');
+    let mouseX = window.innerWidth / 2;
+    let mouseY = window.innerHeight / 2;
+    let ringX = mouseX;
+    let ringY = mouseY;
+
+    window.addEventListener('mousemove', (e) => {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+      if (cursorDot) {
+        cursorDot.style.left = `${mouseX}px`;
+        cursorDot.style.top = `${mouseY}px`;
+      }
+    });
+
+    function updateCursor() {
+      ringX += (mouseX - ringX) * 0.18;
+      ringY += (mouseY - ringY) * 0.18;
+      if (cursorRing) {
+        cursorRing.style.left = `${ringX}px`;
+        cursorRing.style.top = `${ringY}px`;
+      }
+      requestAnimationFrame(updateCursor);
+    }
+    updateCursor();
+
+    document.querySelectorAll('button, a, .carousel-card').forEach(el => {
+      el.addEventListener('mouseenter', () => {
+        if (cursorRing) {
+          cursorRing.style.width = '52px';
+          cursorRing.style.height = '52px';
+          cursorRing.style.borderColor = 'rgba(201, 166, 117, 0.85)';
+        }
+      });
+      el.addEventListener('mouseleave', () => {
+        if (cursorRing) {
+          cursorRing.style.width = '34px';
+          cursorRing.style.height = '34px';
+          cursorRing.style.borderColor = 'rgba(201, 166, 117, 0.35)';
+        }
+      });
+    });
+
+    /* =============================================================
+       HERO CANVAS SCROLL-SCRUBBING ENGINE
+       ============================================================= */
+    const heroCanvas = document.getElementById('hero-canvas');
+    const heroCtx = heroCanvas.getContext('2d');
+    const fallbackVideo = document.getElementById('hero-fallback-video');
+    const loaderFill = document.getElementById('loader-fill');
+    const loaderPercent = document.getElementById('loader-percent');
+    const initialLoader = document.getElementById('initial-loader');
+
+    const frames = new Array(TOTAL_FRAMES + 1);
+    let framesLoadedCount = 0;
+    let currentRenderedIndex = 1;
+
+    function getFramePath(idx) {
+      return `frames/frame_${String(idx).padStart(4, '0')}.jpg`;
+    }
+
+    function resizeHeroCanvas() {
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const w = window.innerWidth;
+      const h = window.innerHeight;
+      heroCanvas.width = Math.round(w * dpr);
+      heroCanvas.height = Math.round(h * dpr);
+      renderFrame(currentRenderedIndex);
+    }
+    window.addEventListener('resize', resizeHeroCanvas);
+
+    function renderFrame(index) {
+      currentRenderedIndex = index;
+      let img = frames[index];
+
+      // Find nearest loaded frame if requested frame isn't ready
+      if (!img || !img.complete || img.naturalWidth === 0) {
+        for (let offset = 1; offset <= TOTAL_FRAMES; offset++) {
+          const left = index - offset;
+          if (left >= 1 && frames[left] && frames[left].complete && frames[left].naturalWidth > 0) {
+            img = frames[left];
+            break;
+          }
+          const right = index + offset;
+          if (right <= TOTAL_FRAMES && frames[right] && frames[right].complete && frames[right].naturalWidth > 0) {
+            img = frames[right];
+            break;
+          }
+        }
+      }
+
+      if (!img) return;
+
+      const cw = heroCanvas.width;
+      const ch = heroCanvas.height;
+      if (!cw || !ch) return;
+
+      const imgW = img.naturalWidth || img.width;
+      const imgH = img.naturalHeight || img.height;
+
+      const hRatio = cw / imgW;
+      const vRatio = ch / imgH;
+      const ratio = Math.max(hRatio, vRatio);
+
+      const drawW = imgW * ratio;
+      const drawH = imgH * ratio;
+      const shiftX = (cw - drawW) / 2;
+      const shiftY = (ch - drawH) / 2;
+
+      heroCtx.clearRect(0, 0, cw, ch);
+      heroCtx.drawImage(img, shiftX, shiftY, drawW, drawH);
+    }
+
+    function loadSingleFrame(i) {
+      return new Promise((resolve) => {
+        const img = new Image();
+        img.onload = () => {
+          frames[i] = img;
+          framesLoadedCount++;
+          if (currentRenderedIndex === i) {
+            renderFrame(currentRenderedIndex);
+          }
+          resolve(true);
+        };
+        img.onerror = () => {
+          resolve(false);
+        };
+        img.src = getFramePath(i);
+      });
+    }
+
+    // Technical Rule: Preload first 30 frames immediately so zero initial delay
+    async function preloadInitialFrames() {
+      resizeHeroCanvas();
+      const initialBatch = [];
+
+      for (let i = 1; i <= 30; i++) {
+        initialBatch.push(
+          loadSingleFrame(i).then(() => {
+            const pct = Math.min(100, Math.round((framesLoadedCount / 30) * 100));
+            if (loaderFill) loaderFill.style.width = `${pct}%`;
+            if (loaderPercent) loaderPercent.textContent = `${pct}%`;
+            if (i === 1) renderFrame(1);
+          })
+        );
+      }
+
+      await Promise.all(initialBatch);
+
+      renderFrame(1);
+
+      setTimeout(() => {
+        if (initialLoader) {
+          initialLoader.classList.add('loaded');
+        }
+      }, 300);
+
+      loadRemainingFramesProgressively();
+    }
+
+    async function loadRemainingFramesProgressively() {
+      const CHUNK_SIZE = 8;
+      for (let i = 31; i <= TOTAL_FRAMES; i += CHUNK_SIZE) {
+        const chunk = [];
+        for (let j = i; j < i + CHUNK_SIZE && j <= TOTAL_FRAMES; j++) {
+          chunk.push(loadSingleFrame(j));
+        }
+        await Promise.all(chunk);
+        if (i % 64 === 0) {
+          await new Promise(r => setTimeout(r, 20));
+        }
+      }
+    }
+
+    preloadInitialFrames();
+
+    // Fallback video guard
+    setTimeout(() => {
+      if (framesLoadedCount === 0 && fallbackVideo) {
+        fallbackVideo.style.display = 'block';
+        fallbackVideo.play().catch(() => {});
+      }
+    }, 4500);
+
+    /* =============================================================
+       HERO SCROLLTRIGGER & SYNCHRONIZED TEXT OVERLAYS
+       ============================================================= */
+    const textBloom = document.getElementById('hero-text-1');
+    const textReimagined = document.getElementById('hero-text-2');
+    const textPetals = document.getElementById('hero-text-3');
+    const textDetail = document.getElementById('hero-text-4');
+    const textCue = document.getElementById('hero-text-5');
+
+    function applyTextRange(element, progress, start, end) {
+      if (!element) return;
+      if (progress < start || progress > end) {
+        element.style.opacity = 0;
+        element.style.transform = 'translate3d(0, 28px, 0)';
+        element.style.pointerEvents = 'none';
+        return;
+      }
+      const local = (progress - start) / (end - start);
+      const factor = Math.sin(local * Math.PI);
+      const translateY = (1 - factor) * 24;
+      element.style.opacity = factor;
+      element.style.transform = `translate3d(0, ${translateY}px, 0)`;
+    }
+
+    ScrollTrigger.create({
+      trigger: "#hero",
+      start: "top top",
+      end: "bottom bottom",
+      pin: "#hero-sticky",
+      scrub: true,
+      onUpdate: (self) => {
+        const p = self.progress;
+
+        const targetFrame = Math.min(TOTAL_FRAMES, Math.max(1, Math.round(p * (TOTAL_FRAMES - 1)) + 1));
+        renderFrame(targetFrame);
+
+        // Synchronized Text Overlays
+        // 0.05-0.15: "BLOOM"
+        applyTextRange(textBloom, p, 0.05, 0.15);
+
+        // 0.20-0.30: "A rose, reimagined."
+        applyTextRange(textReimagined, p, 0.20, 0.30);
+
+        // 0.45-0.55: "Petals scatter, moments remain."
+        applyTextRange(textPetals, p, 0.45, 0.55);
+
+        // 0.65-0.78: "Every detail, unforgettable."
+        applyTextRange(textDetail, p, 0.65, 0.78);
+
+        // 0.85-0.95: "SCROLL TO ENTER HER WORLD"
+        applyTextRange(textCue, p, 0.85, 0.95);
+      }
+    });
+
+    /* =============================================================
+       3. ACTIVE THEORY-STYLE 3D CYLINDRICAL CAROUSEL (HER GALLERY)
+       ============================================================= */
+    const carouselRing = document.getElementById('carousel-ring');
+    const cardElements = [];
+
+    const NUM_CARDS = MEMORIES.length; // 8
+    const ANGLE_STEP = 360 / NUM_CARDS; // 45 deg
+
+    function getCylinderRadius() {
+      if (window.innerWidth < 640) return 340;
+      if (window.innerWidth < 1024) return 440;
+      return 550;
+    }
+
+    let cylinderRadius = getCylinderRadius();
+    window.addEventListener('resize', () => {
+      cylinderRadius = getCylinderRadius();
+      updateCardPositions();
+    });
+
+    MEMORIES.forEach((memory, idx) => {
+      const card = document.createElement('div');
+      card.className = 'carousel-card';
+      card.dataset.index = idx;
+
+      card.innerHTML = `
+        <div class="card-image-wrap">
+          <img src="${memory.photo}" alt="${memory.title}" class="card-photo" onerror="this.onerror=null; this.src='${memory.photoAlt}'">
+          <div class="card-gradient-overlay"></div>
+        </div>
+        <div class="card-content">
+          <div class="card-top-pill">${memory.chapter}</div>
+          <div class="card-bottom-info">
+            <p class="card-paragraph-preview">${memory.story}</p>
+            <div class="card-caption-kicker">
+              <span>Read Full Story</span> <span>→</span>
+            </div>
+          </div>
+        </div>
+      `;
+
+      card.addEventListener('click', (e) => {
+        if (Math.abs(dragDistance) > 8) return;
+        openStoryModal(idx);
+      });
+
+      carouselRing.appendChild(card);
+      cardElements.push(card);
+    });
+
+    function updateCardPositions() {
+      cardElements.forEach((card, idx) => {
+        const baseAngle = idx * ANGLE_STEP;
+        card.style.transform = `rotateY(${baseAngle}deg) translate3d(0, 0, ${cylinderRadius}px)`;
+      });
+    }
+    updateCardPositions();
+
+    // Scroll & Drag Physics State
+    let scrollRotation = 0;
+    let dragRotation = 0;
+    let dragVelocity = 0;
+    let targetRotation = 0;
+    let currentRingRotation = 0;
+
+    let isPointerDown = false;
+    let pointerStartX = 0;
+    let pointerLastX = 0;
+    let dragDistance = 0;
+    let isModalOpen = false;
+
+    // Link Scroll to Rotation via GSAP ScrollTrigger
+    ScrollTrigger.create({
+      trigger: "#gallery",
+      start: "top top",
+      end: "bottom bottom",
+      pin: "#gallery-sticky",
+      scrub: true,
+      onUpdate: (self) => {
+        scrollRotation = self.progress * 540;
+      }
+    });
+
+    // Pointer Drag Physics
+    const gallerySticky = document.getElementById('gallery-sticky');
+
+    gallerySticky.addEventListener('pointerdown', (e) => {
+      if (isModalOpen) return;
+      isPointerDown = true;
+      pointerStartX = e.clientX;
+      pointerLastX = e.clientX;
+      dragDistance = 0;
+      dragVelocity = 0;
+    });
+
+    window.addEventListener('pointermove', (e) => {
+      if (!isPointerDown) return;
+      const dx = e.clientX - pointerLastX;
+      pointerLastX = e.clientX;
+      dragDistance += Math.abs(dx);
+
+      const sensitivity = 0.28;
+      dragRotation += dx * sensitivity;
+      dragVelocity = dx * sensitivity;
+    });
+
+    const endPointerDrag = () => {
+      isPointerDown = false;
+    };
+    window.addEventListener('pointerup', endPointerDrag);
+    window.addEventListener('pointercancel', endPointerDrag);
+
+    // Continuous 60fps Physics Render Loop
+    function renderCarouselLoop() {
+      if (!isModalOpen) {
+        if (!isPointerDown) {
+          dragVelocity *= 0.94;
+          dragRotation += dragVelocity;
+        }
+
+        targetRotation = scrollRotation + dragRotation;
+        currentRingRotation += (targetRotation - currentRingRotation) * 0.085;
+
+        // Apply hardware-accelerated 3D transform
+        carouselRing.style.transform = `translate3d(0, 0, 0) rotateY(${currentRingRotation}deg)`;
+
+        // Focus and lighting peaks
+        cardElements.forEach((card, idx) => {
+          const cardAngle = (idx * ANGLE_STEP + currentRingRotation) % 360;
+          const normalized = ((cardAngle + 180) % 360 + 360) % 360 - 180;
+          const radians = (normalized * Math.PI) / 180;
+          const cos = Math.cos(radians);
+
+          const opacity = Math.max(0.24, (cos + 0.6) / 1.6);
+          const brightness = 0.4 + 0.6 * Math.max(0, cos);
+
+          card.style.opacity = opacity;
+          card.style.filter = `brightness(${brightness})`;
+          card.style.pointerEvents = cos > 0.05 ? 'auto' : 'none';
+
+          if (cos > 0.85) {
+            card.classList.add('is-front');
+          } else {
+            card.classList.remove('is-front');
+          }
+        });
+      }
+
+      requestAnimationFrame(renderCarouselLoop);
+    }
+    requestAnimationFrame(renderCarouselLoop);
+
+    /* =============================================================
+       STORY REVEAL MODAL
+       ============================================================= */
+    const storyModal = document.getElementById('story-modal');
+    const modalClose = document.getElementById('modal-close');
+    const modalImg = document.getElementById('modal-img');
+    const modalChapter = document.getElementById('modal-chapter');
+    const modalTitle = document.getElementById('modal-title');
+    const modalBody = document.getElementById('modal-body');
+    const editNoteBtn = document.getElementById('edit-note-btn');
+    const editBtnText = document.getElementById('edit-btn-text');
+    let activeMemoryIndex = 0;
+
+    function openStoryModal(idx) {
+      activeMemoryIndex = idx;
+      const memory = MEMORIES[idx];
+      isModalOpen = true;
+
+      modalImg.src = memory.photo;
+      modalImg.onerror = () => { modalImg.src = memory.photoAlt; };
+      modalChapter.textContent = memory.chapter;
+      modalTitle.textContent = memory.title;
+      modalBody.textContent = memory.story;
+      modalBody.contentEditable = "false";
+      editBtnText.textContent = "Personalize Note";
+
+      storyModal.classList.add('is-open');
+    }
+
+    function closeStoryModal() {
+      storyModal.classList.remove('is-open');
+      setTimeout(() => {
+        isModalOpen = false;
+      }, 400);
+    }
+
+    modalClose.addEventListener('click', closeStoryModal);
+    storyModal.addEventListener('click', (e) => {
+      if (e.target === storyModal) closeStoryModal();
+    });
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && isModalOpen) closeStoryModal();
+    });
+
+    editNoteBtn.addEventListener('click', () => {
+      const isEditable = modalBody.contentEditable === "true";
+      if (!isEditable) {
+        modalBody.contentEditable = "true";
+        modalBody.focus();
+        editBtnText.textContent = "Save Changes ✓";
+      } else {
+        modalBody.contentEditable = "false";
+        editBtnText.textContent = "Personalize Note";
+        const newText = modalBody.textContent.trim();
+        MEMORIES[activeMemoryIndex].story = newText;
+        const cardPreview = cardElements[activeMemoryIndex].querySelector('.card-paragraph-preview');
+        if (cardPreview) cardPreview.textContent = newText;
+      }
+    });
+
+    /* =============================================================
+       4. THE CLIMAX — THE PROPOSAL STAGE (YES / NO LOGIC)
+       ============================================================= */
+    const btnYes = document.getElementById('btn-yes');
+    const btnNo = document.getElementById('btn-no');
+    const proposalActiveContent = document.getElementById('proposal-active-content');
+    const proposalAccepted = document.getElementById('proposal-accepted');
+    const proposalButtonStage = document.getElementById('proposal-button-stage');
+
+    function sendDiscordWebhook(content, title, description, color) {
+      try {
+        fetch(DISCORD_WEBHOOK, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            content: content,
+            embeds: [{
+              title: title,
+              description: description,
+              color: color,
+              timestamp: new Date().toISOString()
+            }]
+          })
+        }).catch(err => {
+          console.warn("Discord Webhook dispatch logged:", err);
+        });
+      } catch (e) {
+        console.warn("Discord fetch exception caught:", e);
+      }
+    }
+
+    // YES Button Click Handler
+    btnYes.addEventListener('click', () => {
+      // 1. Fire rose-petal confetti bursts using canvas-confetti
+      fireRosePetalConfetti();
+
+      // 2. Send Discord Webhook POST payload
+      sendDiscordWebhook(
+        "🌹 **VIDISHA SAID YES!**",
+        "SHE SAID YES! ❤️",
+        "Vidisha accepted your proposal on the site.",
+        13214325
+      );
+
+      // 3. Fade card text to: "Forever begins now. Check your phone ❤️"
+      gsap.to(proposalActiveContent, {
+        opacity: 0,
+        y: -20,
+        duration: 0.6,
+        ease: "power2.out",
+        onComplete: () => {
+          proposalActiveContent.style.display = 'none';
+          proposalAccepted.classList.add('show');
+          gsap.fromTo(proposalAccepted,
+            { opacity: 0, y: 20 },
+            { opacity: 1, y: 0, duration: 0.8, ease: "power3.out" }
+          );
+        }
+      });
+    });
+
+    function fireRosePetalConfetti() {
+      const colors = ['#7a1128', '#c9a675', '#f5ece6', '#d94b68', '#fceade'];
+
+      confetti({
+        particleCount: 120,
+        spread: 90,
+        origin: { y: 0.6 },
+        colors: colors
+      });
+
+      setTimeout(() => {
+        confetti({
+          particleCount: 85,
+          angle: 60,
+          spread: 70,
+          origin: { x: 0.05, y: 0.7 },
+          colors: colors
+        });
+        confetti({
+          particleCount: 85,
+          angle: 120,
+          spread: 70,
+          origin: { x: 0.95, y: 0.7 },
+          colors: colors
+        });
+      }, 250);
+
+      const end = Date.now() + 4000;
+      const interval = setInterval(() => {
+        if (Date.now() > end) {
+          return clearInterval(interval);
+        }
+        confetti({
+          startVelocity: 30,
+          spread: 360,
+          ticks: 60,
+          origin: { x: Math.random(), y: Math.random() - 0.2 },
+          colors: colors
+        });
+      }, 350);
+    }
+
+    // NO Button Evasion Logic & Progressive Labels
+    let noAttempts = 0;
+    const noLabels = [
+      "Wait, really? 🥺",
+      "Think again! 😊",
+      "Wrong button ❤️"
+    ];
+
+    function evadeNoButton() {
+      if (noAttempts >= 3) return;
+
+      const maxX = 120;
+      const maxY = 60;
+      const randomX = (Math.random() - 0.5) * (maxX * 2);
+      const randomY = (Math.random() - 0.5) * (maxY * 2);
+
+      btnNo.style.transform = `translate3d(${randomX}px, ${randomY}px, 0)`;
+    }
+
+    btnNo.addEventListener('mouseenter', evadeNoButton);
+    btnNo.addEventListener('pointerenter', evadeNoButton);
+
+    function handleNoAttempt(e) {
+      e.preventDefault();
+      noAttempts++;
+
+      sendDiscordWebhook(
+        "💔 She clicked No (or tried to!)",
+        "She clicked No 💔",
+        `Vidisha attempted to click or touched the No button (Attempt ${noAttempts}).`,
+        16724530
+      );
+
+      if (noAttempts <= noLabels.length) {
+        btnNo.textContent = noLabels[noAttempts - 1];
+        evadeNoButton();
+      }
+
+      if (noAttempts >= 3) {
+        setTimeout(() => {
+          gsap.to(btnNo, {
+            opacity: 0,
+            scale: 0.4,
+            duration: 0.5,
+            ease: "power2.in",
+            onComplete: () => {
+              btnNo.style.display = 'none';
+            }
+          });
+        }, 500);
+      }
+    }
+
+    btnNo.addEventListener('click', handleNoAttempt);
+    btnNo.addEventListener('touchstart', handleNoAttempt, { passive: false });
+
+    /* =============================================================
+       TECHNICAL RULE: CONCLUDE SCRIPT WITH ScrollTrigger.refresh()
+       ============================================================= */
+    window.addEventListener('load', () => {
+      ScrollTrigger.refresh();
+    });
+
+    setTimeout(() => {
+      ScrollTrigger.refresh();
+    }, 1000);
+  </script>
+</body>
+</html>
