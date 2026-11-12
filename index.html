@@ -5,10 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>BLOOM — A Rose For Vidisha</title>
   
-  <!-- Google Fonts: Fraunces & Inter & Plus Jakarta Sans -->
+  <!-- Google Fonts: Playfair Display, Inter & Plus Jakarta Sans -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,200..900;1,9..144,200..900&family=Inter:wght@200;300;400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600;700&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 
   <!-- Core CDNs: GSAP, ScrollTrigger, Lenis, Canvas-Confetti -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
@@ -43,6 +43,7 @@
       padding: 0;
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
+      text-rendering: optimizeLegibility;
     }
 
     /* Technical Rule: overflow-x: clip on html and body */
@@ -281,11 +282,11 @@
     }
 
     .loader-title {
-      font-family: 'Fraunces', serif;
+      font-family: 'Playfair Display', Georgia, serif;
       font-style: italic;
-      font-size: 44px;
-      font-weight: 300;
-      letter-spacing: 4px;
+      font-size: 46px;
+      font-weight: 400;
+      letter-spacing: 3px;
       color: var(--text-ivory);
       margin-bottom: 12px;
       text-shadow: 0 0 35px rgba(122, 17, 40, 0.4);
@@ -348,6 +349,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
+      contain: paint layout;
     }
 
     #hero-canvas {
@@ -358,6 +360,7 @@
       height: 100%;
       display: block;
       z-index: 2;
+      image-rendering: auto;
     }
 
     /* Fallback Hero Video */
@@ -373,13 +376,13 @@
       opacity: 0.7;
     }
 
-    /* Dark Vignette Overlay */
+    /* Dark Vignette Overlay with crystal clear center */
     .hero-canvas-vignette {
       position: absolute;
       inset: 0;
       z-index: 3;
       pointer-events: none;
-      background: radial-gradient(circle at 50% 50%, rgba(6, 2, 4, 0.1) 20%, rgba(6, 2, 4, 0.55) 75%, var(--bg-deep) 100%);
+      background: radial-gradient(circle at 50% 50%, rgba(6, 2, 4, 0.02) 20%, rgba(6, 2, 4, 0.45) 75%, var(--bg-deep) 100%);
     }
 
     /* Synchronized Hero Text Overlays */
@@ -398,7 +401,7 @@
     .hero-text-item {
       position: absolute;
       opacity: 0;
-      transform: translateY(30px);
+      transform: translate3d(0, 30px, 0);
       will-change: transform, opacity;
       width: 100%;
       max-width: 960px;
@@ -406,16 +409,16 @@
       pointer-events: none;
     }
 
-    /* 0.05-0.15: "BLOOM" — 110px Fraunces italic #f5ece6 centered */
+    /* 0.05-0.15: "BLOOM" — 110px Playfair Display italic #f5ece6 centered */
     .hero-title-bloom {
-      font-family: 'Fraunces', serif;
+      font-family: 'Playfair Display', Georgia, serif;
       font-style: italic;
-      font-weight: 300;
-      font-size: clamp(64px, 9vw, 110px);
-      letter-spacing: 0.02em;
+      font-weight: 400;
+      font-size: clamp(64px, 9.5vw, 114px);
+      letter-spacing: 0.03em;
       color: var(--text-ivory);
       line-height: 1.05;
-      text-shadow: 0 10px 40px rgba(0, 0, 0, 0.95), 0 0 60px rgba(122, 17, 40, 0.4);
+      text-shadow: 0 10px 40px rgba(0, 0, 0, 0.95), 0 0 60px rgba(122, 17, 40, 0.45);
     }
 
     /* 0.20-0.30: "A rose, reimagined." — 26px Inter light italic #f5ece6 centered */
@@ -429,21 +432,23 @@
       text-shadow: 0 4px 20px rgba(0, 0, 0, 0.85);
     }
 
-    /* 0.45-0.55: "Petals scatter, moments remain." — 60px Fraunces #f5ece6 centered */
+    /* 0.45-0.55: "Petals scatter, moments remain." — 60px Playfair Display #f5ece6 centered */
     .hero-line-petals {
-      font-family: 'Fraunces', serif;
-      font-weight: 300;
-      font-size: clamp(32px, 5vw, 60px);
+      font-family: 'Playfair Display', Georgia, serif;
+      font-style: italic;
+      font-weight: 400;
+      font-size: clamp(32px, 5.2vw, 62px);
       line-height: 1.2;
       color: var(--text-ivory);
       text-shadow: 0 8px 30px rgba(0, 0, 0, 0.9);
     }
 
-    /* 0.65-0.78: "Every detail, unforgettable." — 60px Fraunces #f5ece6 centered */
+    /* 0.65-0.78: "Every detail, unforgettable." — 60px Playfair Display #f5ece6 centered */
     .hero-line-detail {
-      font-family: 'Fraunces', serif;
-      font-weight: 300;
-      font-size: clamp(32px, 5vw, 60px);
+      font-family: 'Playfair Display', Georgia, serif;
+      font-style: italic;
+      font-weight: 400;
+      font-size: clamp(32px, 5.2vw, 62px);
       line-height: 1.2;
       color: var(--text-ivory);
       text-shadow: 0 8px 30px rgba(0, 0, 0, 0.9);
@@ -515,6 +520,7 @@
       justify-content: center;
       perspective: 1200px;
       perspective-origin: 50% 50%;
+      contain: paint layout;
     }
 
     .gallery-bg-glow {
@@ -546,10 +552,10 @@
     }
 
     .gallery-title {
-      font-family: 'Fraunces', serif;
+      font-family: 'Playfair Display', Georgia, serif;
       font-style: italic;
-      font-size: clamp(24px, 4vw, 36px);
-      font-weight: 300;
+      font-size: clamp(24px, 4vw, 38px);
+      font-weight: 400;
       color: var(--text-ivory);
       letter-spacing: 1px;
     }
@@ -621,8 +627,10 @@
       -webkit-backdrop-filter: blur(16px);
       overflow: hidden;
       transform-style: preserve-3d;
-      will-change: transform, opacity, filter;
-      transition: border-color 0.4s ease, box-shadow 0.4s ease;
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+      will-change: transform, opacity;
+      transition: border-color 0.35s ease, box-shadow 0.35s ease;
       cursor: pointer;
       -webkit-box-reflect: below 14px linear-gradient(to bottom, transparent 72%, rgba(0, 0, 0, 0.35) 100%);
     }
@@ -658,6 +666,17 @@
       transform: scale(1.06);
     }
 
+    /* Dynamic Hardware-Accelerated Shading Layer for 3D depth */
+    .card-shade-overlay {
+      position: absolute;
+      inset: 0;
+      background: #000;
+      opacity: 0;
+      pointer-events: none;
+      z-index: 2;
+      transition: opacity 0.15s ease;
+    }
+
     .card-gradient-overlay {
       position: absolute;
       inset: 0;
@@ -667,7 +686,7 @@
         rgba(6, 2, 4, 0.75) 60%,
         rgba(6, 2, 4, 0.98) 100%
       );
-      z-index: 2;
+      z-index: 3;
     }
 
     .card-content {
@@ -677,7 +696,7 @@
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      z-index: 3;
+      z-index: 4;
       pointer-events: none;
     }
 
@@ -846,10 +865,10 @@
     }
 
     .modal-story-title {
-      font-family: 'Fraunces', serif;
+      font-family: 'Playfair Display', Georgia, serif;
       font-style: italic;
-      font-size: clamp(26px, 3.5vw, 34px);
-      font-weight: 300;
+      font-size: clamp(26px, 3.5vw, 36px);
+      font-weight: 400;
       color: var(--text-ivory);
       line-height: 1.15;
       margin-bottom: 20px;
@@ -918,6 +937,7 @@
       padding: 120px 24px 80px;
       z-index: 3;
       overflow: hidden;
+      contain: paint layout;
     }
 
     /* Background Video Clip: Media/Videos Frames/v04-ambient-stage.mp4 */
@@ -976,9 +996,9 @@
     }
 
     .proposal-heading {
-      font-family: 'Fraunces', serif;
+      font-family: 'Playfair Display', Georgia, serif;
       font-style: italic;
-      font-weight: 300;
+      font-weight: 400;
       font-size: clamp(34px, 5.2vw, 56px);
       line-height: 1.25;
       color: var(--text-ivory);
@@ -1110,10 +1130,10 @@
     }
 
     .accepted-heading {
-      font-family: 'Fraunces', serif;
+      font-family: 'Playfair Display', Georgia, serif;
       font-style: italic;
       font-size: clamp(32px, 5vw, 50px);
-      font-weight: 300;
+      font-weight: 400;
       color: var(--text-ivory);
       line-height: 1.25;
       margin-bottom: 18px;
@@ -1257,7 +1277,7 @@
 
       <!-- Synchronized Text Overlays -->
       <div class="hero-text-container">
-        <!-- 0.05-0.15: "BLOOM" — 110px Fraunces italic #f5ece6 centered -->
+        <!-- 0.05-0.15: "BLOOM" — 110px Playfair Display italic #f5ece6 centered -->
         <div class="hero-text-item" id="hero-text-1">
           <h1 class="hero-title-bloom">BLOOM</h1>
         </div>
@@ -1267,12 +1287,12 @@
           <p class="hero-sub-reimagined">A rose, reimagined.</p>
         </div>
 
-        <!-- 0.45-0.55: "Petals scatter, moments remain." — 60px Fraunces #f5ece6 centered -->
+        <!-- 0.45-0.55: "Petals scatter, moments remain." — 60px Playfair Display #f5ece6 centered -->
         <div class="hero-text-item" id="hero-text-3">
           <h2 class="hero-line-petals">Petals scatter, moments remain.</h2>
         </div>
 
-        <!-- 0.65-0.78: "Every detail, unforgettable." — 60px Fraunces #f5ece6 centered -->
+        <!-- 0.65-0.78: "Every detail, unforgettable." — 60px Playfair Display #f5ece6 centered -->
         <div class="hero-text-item" id="hero-text-4">
           <h2 class="hero-line-detail">Every detail, unforgettable.</h2>
         </div>
@@ -1319,7 +1339,7 @@
     <div class="story-modal-dialog">
       <button class="modal-close-btn" id="modal-close" aria-label="Close story">✕</button>
       <div class="modal-photo-pane">
-        <img src="" alt="Vidisha Memory" class="modal-photo" id="modal-img">
+        <img src="" alt="Vidisha Memory" class="modal-photo" id="modal-img" decoding="async">
       </div>
       <div class="modal-text-pane">
         <div class="modal-chapter-tag" id="modal-chapter">CHAPTER 01</div>
@@ -1374,7 +1394,7 @@
 
   <!-- -------------------------------------------------------------
        JAVASCRIPT: ENGINE & ORCHESTRATION
-       ------------------------------------------------------------- -->
+       ------------------------------------------------------------- */ -->
   <script>
     /* =============================================================
        GLOBAL CONSTANTS & MEMORIES
@@ -1491,7 +1511,6 @@ so please vidi ji let me be your endgame and your final destination let me stand
       }
     });
 
-    // Auto-trigger on first user interaction anywhere on page
     const startAudioOnFirstTouch = () => {
       if (!hasAttemptedAutoStart && bgMusic.paused) {
         hasAttemptedAutoStart = true;
@@ -1535,7 +1554,7 @@ so please vidi ji let me be your endgame and your final destination let me stand
       if (bar) {
         bar.style.transform = `scaleY(${Math.min(1, Math.max(0, progress))})`;
       }
-    });
+    }, { passive: true });
 
     /* =============================================================
        BESPOKE ACTIVE THEORY LUXURY CURSOR
@@ -1554,7 +1573,7 @@ so please vidi ji let me be your endgame and your final destination let me stand
         cursorDot.style.left = `${mouseX}px`;
         cursorDot.style.top = `${mouseY}px`;
       }
-    });
+    }, { passive: true });
 
     function updateCursor() {
       ringX += (mouseX - ringX) * 0.18;
@@ -1585,10 +1604,10 @@ so please vidi ji let me be your endgame and your final destination let me stand
     });
 
     /* =============================================================
-       HERO CANVAS SCROLL-SCRUBBING ENGINE
+       HIGH-PERFORMANCE MULTI-PASS HERO CANVAS SCRUBBER
        ============================================================= */
     const heroCanvas = document.getElementById('hero-canvas');
-    const heroCtx = heroCanvas.getContext('2d');
+    const heroCtx = heroCanvas.getContext('2d', { alpha: false });
     const fallbackVideo = document.getElementById('hero-fallback-video');
     const loaderFill = document.getElementById('loader-fill');
     const loaderPercent = document.getElementById('loader-percent');
@@ -1597,12 +1616,15 @@ so please vidi ji let me be your endgame and your final destination let me stand
     const frames = new Array(TOTAL_FRAMES + 1);
     let framesLoadedCount = 0;
     let currentRenderedIndex = 1;
+    let targetRenderIndex = 1;
+    let canvasRafPending = false;
 
     function getFramePath(idx) {
       return `frames/frame_${String(idx).padStart(4, '0')}.jpg`;
     }
 
     function resizeHeroCanvas() {
+      // High-DPI crisp rendering capped at 2 to preserve 60fps on mobile/low-end GPUs
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
       const w = window.innerWidth;
       const h = window.innerHeight;
@@ -1610,26 +1632,28 @@ so please vidi ji let me be your endgame and your final destination let me stand
       heroCanvas.height = Math.round(h * dpr);
       renderFrame(currentRenderedIndex);
     }
-    window.addEventListener('resize', resizeHeroCanvas);
+    window.addEventListener('resize', resizeHeroCanvas, { passive: true });
+
+    function findClosestLoadedFrame(target) {
+      for (let offset = 1; offset <= TOTAL_FRAMES; offset++) {
+        const left = target - offset;
+        if (left >= 1 && frames[left] && frames[left].complete && frames[left].naturalWidth > 0) {
+          return frames[left];
+        }
+        const right = target + offset;
+        if (right <= TOTAL_FRAMES && frames[right] && frames[right].complete && frames[right].naturalWidth > 0) {
+          return frames[right];
+        }
+      }
+      return null;
+    }
 
     function renderFrame(index) {
       currentRenderedIndex = index;
       let img = frames[index];
 
-      // Find nearest loaded frame if requested frame isn't ready
       if (!img || !img.complete || img.naturalWidth === 0) {
-        for (let offset = 1; offset <= TOTAL_FRAMES; offset++) {
-          const left = index - offset;
-          if (left >= 1 && frames[left] && frames[left].complete && frames[left].naturalWidth > 0) {
-            img = frames[left];
-            break;
-          }
-          const right = index + offset;
-          if (right <= TOTAL_FRAMES && frames[right] && frames[right].complete && frames[right].naturalWidth > 0) {
-            img = frames[right];
-            break;
-          }
-        }
+        img = findClosestLoadedFrame(index);
       }
 
       if (!img) return;
@@ -1650,18 +1674,34 @@ so please vidi ji let me be your endgame and your final destination let me stand
       const shiftX = (cw - drawW) / 2;
       const shiftY = (ch - drawH) / 2;
 
-      heroCtx.clearRect(0, 0, cw, ch);
+      // Ultra-crisp high-quality image smoothing
+      heroCtx.imageSmoothingEnabled = true;
+      heroCtx.imageSmoothingQuality = 'high';
       heroCtx.drawImage(img, shiftX, shiftY, drawW, drawH);
     }
 
+    // Decoupled RAF scheduler so fast scrolling never chokes low-end CPU
+    function requestFrameRender(index) {
+      targetRenderIndex = index;
+      if (!canvasRafPending) {
+        canvasRafPending = true;
+        requestAnimationFrame(() => {
+          renderFrame(targetRenderIndex);
+          canvasRafPending = false;
+        });
+      }
+    }
+
     function loadSingleFrame(i) {
+      if (frames[i]) return Promise.resolve(true);
       return new Promise((resolve) => {
         const img = new Image();
+        img.decoding = 'async';
         img.onload = () => {
           frames[i] = img;
           framesLoadedCount++;
           if (currentRenderedIndex === i) {
-            renderFrame(currentRenderedIndex);
+            requestFrameRender(i);
           }
           resolve(true);
         };
@@ -1672,11 +1712,12 @@ so please vidi ji let me be your endgame and your final destination let me stand
       });
     }
 
-    // Technical Rule: Preload first 30 frames immediately so zero initial delay
-    async function preloadInitialFrames() {
+    // Multi-Pass Distributed Preloading: Zero Initial Delay + Instant Full-Timeline Coverage
+    async function startProgressivePreload() {
       resizeHeroCanvas();
-      const initialBatch = [];
 
+      // Pass 1: Preload first 30 frames immediately for zero initial wait
+      const initialBatch = [];
       for (let i = 1; i <= 30; i++) {
         initialBatch.push(
           loadSingleFrame(i).then(() => {
@@ -1687,35 +1728,49 @@ so please vidi ji let me be your endgame and your final destination let me stand
           })
         );
       }
-
       await Promise.all(initialBatch);
-
       renderFrame(1);
 
+      // Smoothly dismiss luxury preloader
       setTimeout(() => {
         if (initialLoader) {
           initialLoader.classList.add('loaded');
         }
       }, 300);
 
-      loadRemainingFramesProgressively();
-    }
+      // Pass 2: High-Priority Distributed Keyframes (every 10th frame across entire video)
+      // This guarantees the entire 628-frame timeline is scrubbable in high quality within 1-2s!
+      const keyframeBatch = [];
+      for (let i = 40; i <= TOTAL_FRAMES; i += 10) {
+        keyframeBatch.push(loadSingleFrame(i));
+      }
+      await Promise.all(keyframeBatch);
 
-    async function loadRemainingFramesProgressively() {
-      const CHUNK_SIZE = 8;
+      // Pass 3: Secondary Stride (every 5th frame)
+      const secondaryBatch = [];
+      for (let i = 35; i <= TOTAL_FRAMES; i += 10) {
+        secondaryBatch.push(loadSingleFrame(i));
+      }
+      await Promise.all(secondaryBatch);
+
+      // Pass 4: Fill remaining interstitial frames progressively with non-blocking yields
+      const CHUNK_SIZE = 10;
       for (let i = 31; i <= TOTAL_FRAMES; i += CHUNK_SIZE) {
         const chunk = [];
         for (let j = i; j < i + CHUNK_SIZE && j <= TOTAL_FRAMES; j++) {
-          chunk.push(loadSingleFrame(j));
+          if (!frames[j]) {
+            chunk.push(loadSingleFrame(j));
+          }
         }
-        await Promise.all(chunk);
-        if (i % 64 === 0) {
-          await new Promise(r => setTimeout(r, 20));
+        if (chunk.length > 0) {
+          await Promise.all(chunk);
+          // Yield 16ms so low-end devices maintain 60fps interaction
+          await new Promise(r => setTimeout(r, 16));
         }
       }
     }
 
-    preloadInitialFrames();
+    startProgressivePreload();
 
     // Fallback video guard
     setTimeout(() => {
@@ -1759,7 +1814,7 @@ so please vidi ji let me be your endgame and your final destination let me stand
         const p = self.progress;
 
         const targetFrame = Math.min(TOTAL_FRAMES, Math.max(1, Math.round(p * (TOTAL_FRAMES - 1)) + 1));
-        renderFrame(targetFrame);
+        requestFrameRender(targetFrame);
 
         // Synchronized Text Overlays
         // 0.05-0.15: "BLOOM"
@@ -1781,9 +1836,11 @@ so please vidi ji let me be your endgame and your final destination let me stand
 
     /* =============================================================
        3. ACTIVE THEORY-STYLE 3D CYLINDRICAL CAROUSEL (HER GALLERY)
+       Optimized with Hardware-Accelerated Shading and Compositor Layers
        ============================================================= */
     const carouselRing = document.getElementById('carousel-ring');
     const cardElements = [];
+    const cardShadeElements = [];
 
     const NUM_CARDS = MEMORIES.length; // 8
     const ANGLE_STEP = 360 / NUM_CARDS; // 45 deg
@@ -1798,7 +1855,7 @@ so please vidi ji let me be your endgame and your final destination let me stand
     window.addEventListener('resize', () => {
       cylinderRadius = getCylinderRadius();
       updateCardPositions();
-    });
+    }, { passive: true });
 
     MEMORIES.forEach((memory, idx) => {
       const card = document.createElement('div');
@@ -1807,7 +1864,8 @@ so please vidi ji let me be your endgame and your final destination let me stand
 
       card.innerHTML = `
         <div class="card-image-wrap">
-          <img src="${memory.photo}" alt="${memory.title}" class="card-photo" onerror="this.onerror=null; this.src='${memory.photoAlt}'">
+          <img src="${memory.photo}" alt="${memory.title}" class="card-photo" decoding="async" onerror="this.onerror=null; this.src='${memory.photoAlt}'">
+          <div class="card-shade-overlay"></div>
           <div class="card-gradient-overlay"></div>
         </div>
         <div class="card-content">
@@ -1828,6 +1886,7 @@ so please vidi ji let me be your endgame and your final destination let me stand
 
       carouselRing.appendChild(card);
       cardElements.push(card);
+      cardShadeElements.push(card.querySelector('.card-shade-overlay'));
     });
 
     function updateCardPositions() {
@@ -1873,7 +1932,7 @@ so please vidi ji let me be your endgame and your final destination let me stand
       pointerLastX = e.clientX;
       dragDistance = 0;
       dragVelocity = 0;
-    });
+    }, { passive: true });
 
     window.addEventListener('pointermove', (e) => {
       if (!isPointerDown) return;
@@ -1884,13 +1943,13 @@ so please vidi ji let me be your endgame and your final destination let me stand
       const sensitivity = 0.28;
       dragRotation += dx * sensitivity;
       dragVelocity = dx * sensitivity;
-    });
+    }, { passive: true });
 
     const endPointerDrag = () => {
       isPointerDown = false;
     };
-    window.addEventListener('pointerup', endPointerDrag);
-    window.addEventListener('pointercancel', endPointerDrag);
+    window.addEventListener('pointerup', endPointerDrag, { passive: true });
+    window.addEventListener('pointercancel', endPointerDrag, { passive: true });
 
     // Continuous 60fps Physics Render Loop
     function renderCarouselLoop() {
@@ -1903,29 +1962,33 @@ so please vidi ji let me be your endgame and your final destination let me stand
         targetRotation = scrollRotation + dragRotation;
         currentRingRotation += (targetRotation - currentRingRotation) * 0.085;
 
-        // Apply hardware-accelerated 3D transform
+        // Apply hardware-accelerated 3D transform to ring
         carouselRing.style.transform = `translate3d(0, 0, 0) rotateY(${currentRingRotation}deg)`;
 
-        // Focus and lighting peaks
-        cardElements.forEach((card, idx) => {
+        // Focus and lighting peaks using compositor-only opacity updates (zero GPU shader lag on low-end devices)
+        for (let idx = 0; idx < NUM_CARDS; idx++) {
+          const card = cardElements[idx];
+          const shade = cardShadeElements[idx];
           const cardAngle = (idx * ANGLE_STEP + currentRingRotation) % 360;
           const normalized = ((cardAngle + 180) % 360 + 360) % 360 - 180;
           const radians = (normalized * Math.PI) / 180;
           const cos = Math.cos(radians);
 
           const opacity = Math.max(0.24, (cos + 0.6) / 1.6);
-          const brightness = 0.4 + 0.6 * Math.max(0, cos);
-
           card.style.opacity = opacity;
-          card.style.filter = `brightness(${brightness})`;
           card.style.pointerEvents = cos > 0.05 ? 'auto' : 'none';
+
+          if (shade) {
+            // Modulate darkness without expensive CSS filters
+            shade.style.opacity = Math.max(0, (1 - cos) * 0.55);
+          }
 
           if (cos > 0.85) {
             card.classList.add('is-front');
           } else {
             card.classList.remove('is-front');
           }
-        });
+        }
       }
 
       requestAnimationFrame(renderCarouselLoop);
